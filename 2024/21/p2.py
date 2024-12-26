@@ -10,15 +10,17 @@ dpad_grid = [" ^A", "<v>"]
 dpad_loc = {dpad_grid[r][c]: (r, c) for r in range(2) for c in range(3)}
 
 
-def moves(dr, dc, left_blocked):
+def moves(dr, dc, left_blocked, vert_blocked):
     ret = ""
-    if dc < 0 and not left_blocked:
+    if not left_blocked:
         ret += "<" * (-dc)
+    if vert_blocked:
+        ret += ">" * dc
     ret += "v" * dr
     ret += "^" * (-dr)
-    if dc > 0:
+    if not vert_blocked:
         ret += ">" * dc
-    elif left_blocked:
+    if left_blocked:
         ret += "<" * (-dc)
     return ret
 
@@ -28,7 +30,7 @@ def numpad(code):
     r, c = 3, 2
     for char in code:
         nr, nc = numpad_loc[char]
-        ret += moves(nr - r, nc - c, r == 3 and nc == 0) + "A"
+        ret += moves(nr - r, nc - c, r == 3 and nc == 0, c == 0 and nr == 3) + "A"
         r, c = nr, nc
     return ret
 
@@ -38,7 +40,7 @@ def directional(code):
     r, c = 0, 2
     for char in code:
         nr, nc = dpad_loc[char]
-        ret += moves(nr - r, nc - c, r == 0 and nc == 0) + "A"
+        ret += moves(nr - r, nc - c, r == 0 and nc == 0, c == 0 and nr == 0) + "A"
         r, c = nr, nc
     return ret
 
